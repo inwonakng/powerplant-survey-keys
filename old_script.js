@@ -4,13 +4,15 @@ var suggestion_on = true
 
 var num_questions = 4
 var qset = genRanNums(1000,1)
-var cur_index= -1
-var cities = ['c1', 'c2']
+
+var cities = ['C1', 'C2']
+var setup = []
+for(i = 0; i < num_questions; i++){
+    setup.push({num_cities:genRanNums(2, 1)[0] + 1,user_city:cities[genRanNums(2,1)[0]]})
+}
 
 $(document).ready(() => {
     //  setting user city randomly
-    cityindex = genRanNums(cities.length, 1)
-    usercity = cities[cityindex]
     $('#region').html(usercity)
     $('#usercity').val(usercity)
 
@@ -35,7 +37,6 @@ $(document).ready(() => {
     $('qindex').html(`1/${num_questions+1}`)
 
     $('#prevbtn').prop('disabled',true)
-    cur_index=0
 
     //  use this functions to skip pages to debug
     //  accept()
@@ -71,12 +72,12 @@ function makequestion(){
     var idx = $('#questions').children().length
 
     vari = plant_story[qset][idx]
-    // if (genRanNums(2, 1)[0] + 1 == 2) {
+    if (setup[idx].num_cities > 1) {
         ac = vari['affected'][0].toLowerCase()
-        ikey = 'u_' + usercity + '_p_' + ac
-    // } else {
-    //     ikey = 'onecity'
-    // }
+        ikey = 'u_' + setup[idx].user_city.toLowerCase() + '_p_' + ac
+    } else {
+        ikey = 'onecity'
+    }
 
     $('#questions').append(
         $('<div>',{class:'question'}).append(
@@ -89,7 +90,7 @@ function makequestion(){
                         <bigpop id="c1pop">${vari['C1']}</bigpop>
                     </b>
                     <b>
-                        <smallpop id="c2pop">${vari['C2']}</smallpop>
+                        <smallpop id="c2pop">${setup[idx].num_cities>1 ? vari['C2'] : ''}</smallpop>
                     </b>
                 </div>
             </div>`
