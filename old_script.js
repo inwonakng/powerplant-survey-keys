@@ -1,42 +1,36 @@
 var options_set = false
 var suggestion_on = true
-var questions = [document.getElementById('q0'),
-document.getElementById('q1'),
-document.getElementById('q2'),
-document.getElementById('q3'),
-document.getElementById('q4'),
-document.getElementById('q5')]
+
 
 var num_questions = 4
-
+var qset = genRanNums(1000,1)
+var cur_index= -1
 var cities = ['C1', 'C2']
 
 $(document).ready(() => {
     //  setting user city randomly
     cityindex = genRanNums(cities.length, 1)
     usercity = cities[cityindex]
-    document.getElementById('region').innerHTML = usercity
-    document.getElementById('usercity').value = usercity
+    $('#region').html(usercity)
+    $('#usercity').val(usercity)
 
-    document.getElementById('icon_list').innerHTML = icon_list
+    $('#icon_list').html(icon_list)
 
     num_cities = genRanNums(2, 1)[0] + 1
 
-    document.getElementById('num_city').value = num_cities
+    $('num_city').val(num_cities)
 
-    document.getElementById('promptbody').innerHTML = prompt_texts[num_cities]
+    $('promptbody').html(prompt_texts[num_cities])
 
-    rannums = genRanNums(1000, 1)
+    $("#gender").prop('selectedIndex', -1)
+    $("#education").prop('selectedIndex', -1)
+    $("#agegroup").prop('selectedIndex', -1)
 
-    set_text(rannums[0], num_cities)
+    
+    makequestion()
+    $('qindex').html(`1/${num_questions+1}`)
 
-    document.getElementById("gender").selectedIndex = -1
-    document.getElementById("education").selectedIndex = -1
-    document.getElementById("agegroup").selectedIndex = -1
-
-    document.getElementById('qindex').innerHTML = '1/' + questions.length
-
-    options_set = true
+    $('#prevbtn').prop('disabled',true)
 
     //  use this functions to skip pages to debug
     //  accept()
@@ -47,53 +41,149 @@ $(document).ready(() => {
     //  next()
 })
 
-function next() {
-    var show_index
-    //   console.log('okay..')
-    for (i = 0; i < questions.length; i++) {
-        if (questions[i].style.display != 'none' && i < questions.length - 1) {
-            //  console.log('found'+i)
-            document.getElementById('prompt').style.display = 'block'
-            document.getElementById('prevbtn').disabled = false
-            show_index = i + 2
-            questions[i].style.display = 'none'
-            questions[i + 1].style.display = 'block'
-            document.getElementById('scenario').scrollIntoView()
-            document.getElementById('qindex').text = show_index + '/' + questions.length
-            document.getElementById('scenario').innerHTML = 'Scenario ' + show_index
-            if (i == questions.length - 2) {
-                document.getElementById('nextbtn').disabled = true
-                if (suggestion_on) {
-                    document.getElementById('scenario').innerHTML = 'Final Question'
-                    document.getElementById('prompt').style.display = 'none'
-                }
-            }
-            break
+function set_text(num, num_cities) {
+    vari = plant_story[num]
+    usercity = $('#usercity').val().toLowerCase()
+
+    for (i = 0; i < num_questions; i++) {
+        if (num_cities == 2) {
+            ac = vari[i]['affected'][0].toLowerCase()
+            ikey = 'u_' + usercity + '_p_' + ac
+        } else {
+            ikey = 'onecity'
+        }
+
+        document.getElementById('q' + i + 'diagram').src = makelink(ikey)
+        document.getElementById('q' + i + 'c1pop').innerHTML = vari[i]['C1']
+        if (num_cities == 2) {
+            document.getElementById('q' + i + 'c2pop').innerHTML = vari[i]['C2']
         }
     }
+    document.getElementById('optionset').value = num.toString()
 }
 
-function prev() {
-    var show_index
-    for (i = 0; i < questions.length; i++) {
-        if (questions[i].style.display != 'none' && i > 0) {
-            document.getElementById('prompt').style.display = 'block'
-            document.getElementById('nextbtn').disabled = false
-            show_index = i
-            questions[i].style.display = 'none'
-            questions[i - 1].style.display = 'block'
-            document.getElementById('scenario').scrollIntoView()
-            // display[i] = 0
-            // display[i-1] = 1
-            document.getElementById('qindex').text = show_index + '/' + questions.length
-            document.getElementById('scenario').innerHTML = 'Scenario ' + show_index
-            if (i == 1) {
-                document.getElementById('prevbtn').disabled = true
-            }
-            break
-        }
+function makequestion(){
+    var idx = $('#questions').children().length
+
+    vari = plant_story[qset][idx]
+    if (genRanNums(2, 1)[0] + 1 == 2) {
+        ac = vari['affected'][0].toLowerCase()
+        ikey = 'u_' + usercity + '_p_' + ac
+    } else {
+        ikey = 'onecity'
     }
+
+    $('#questions').append(
+        $('<div>').append(
+            `<div>
+                <h4>Proposal</h4>
+                <div class="imgbox">
+                    <img id="diagram"
+                        src="${makelink(ikey)}">
+                    <b>
+                        <bigpop id="c1pop">${vari['C1']}</bigpop>
+                    </b>
+                    <b>
+                        <smallpop id="c2pop">${vari['C2']}</smallpop>
+                    </b>
+                </div>
+            </div>`
+        ).append(
+            `<l style="display:flex;align-items:center;">
+                <crowd-radio-group required>
+                    <crowd-radio-button name="q0_yes" value="yes">Yes</crowd-radio-button>
+                    <crowd-radio-button name="q0_no" value="no">No</crowd-radio-button>
+                </crowd-radio-group>
+            </l>`    
+        )
+    )
+    $('#optionset').val(idx.toString())
+    $('scenario').html(`Scearnio ${idx+1}`)
 }
+
+$('#nextbtn').click(()=> {
+    var idx = $('#questions').children().length
+    
+    if(idx == num_questions -1){
+        $('#nextbtn').prop('disabled',true)
+    }
+
+    if(idx < num_questions){
+        makequestion()
+        $('#questions').children().hide()
+        $('#questions').children().last().show()
+        $('#prevbtn').prop('disabled',false)
+    }
+
+})
+
+$('#prevbtn').click(e=>{
+    var idx = $('#questions').children().length
+    
+    if(idx == 1){
+        $('#prevbtn').prop('disabled',true)
+    }
+
+    if(idx > 0){
+        $('#questions').children().hide()
+        $('#questions').children().eq(idx).show()
+    }
+})
+
+
+// function next() {
+//     var show_index
+//     //   console.log('okay..')
+//     for (i = 0; i < questions.length; i++) {
+//         if (questions[i].style.display != 'none' && i < questions.length - 1) {
+//             //  console.log('found'+i)
+//             document.getElementById('prompt').style.display = 'block'
+//             document.getElementById('prevbtn').disabled = false
+//             show_index = i + 2
+//             questions[i].style.display = 'none'
+//             questions[i + 1].style.display = 'block'
+//             document.getElementById('scenario').scrollIntoView()
+//             document.getElementById('qindex').text = show_index + '/' + questions.length
+//             document.getElementById('scenario').innerHTML = 'Scenario ' + show_index
+            
+//             if (i == questions.length - 2) {
+//                 document.getElementById('nextbtn').disabled = true
+//                 if (suggestion_on) {
+//                     document.getElementById('scenario').innerHTML = 'Final Question'
+//                     document.getElementById('prompt').style.display = 'none'
+//                 }
+//             }
+//             if (i == questions.length - 3) {
+//                 document.getElementById('nextbtn').disabled = true
+//                     document.getElementById('scenario').innerHTML = 'Demographic Question'
+//                     document.getElementById('prompt').style.display = 'none'
+//             }
+//             break
+//         }
+//     }
+// }
+
+// function prev() {
+//     var show_index
+//     for (i = 0; i < questions.length; i++) {
+//         if (questions[i].style.display != 'none' && i > 0) {
+//             document.getElementById('prompt').style.display = 'block'
+//             document.getElementById('nextbtn').disabled = false
+//             show_index = i
+//             questions[i].style.display = 'none'
+//             questions[i - 1].style.display = 'block'
+//             document.getElementById('scenario').scrollIntoView()
+//             // display[i] = 0
+//             // display[i-1] = 1
+//             document.getElementById('qindex').text = show_index + '/' + questions.length
+//             document.getElementById('scenario').innerHTML = 'Scenario ' + show_index
+//             if (i == 1) {
+//                 document.getElementById('prevbtn').disabled = true
+//             }
+//             break
+//         }
+//     }
+// }
 
 function accept() {
     document.getElementById("consentform").style.display = 'none'
@@ -115,27 +205,6 @@ function genRanNums(thres, count) {
         arr.push(n)
     }
     return arr
-}
-
-function set_text(num, num_cities) {
-    vari = plant_story[num]
-    usercity = document.getElementById('usercity').value.toLowerCase()
-
-    for (i = 0; i < 4; i++) {
-        if (num_cities == 2) {
-            ac = vari[i]['affected'][0].toLowerCase()
-            ikey = 'u_' + usercity + '_p_' + ac
-        } else {
-            ikey = 'onecity'
-        }
-
-        document.getElementById('q' + i + 'diagram').src = makelink(ikey)
-        document.getElementById('q' + i + 'c1pop').innerHTML = vari[i]['C1']
-        if (num_cities == 2) {
-            document.getElementById('q' + i + 'c2pop').innerHTML = vari[i]['C2']
-        }
-    }
-    document.getElementById('optionset').value = num.toString()
 }
 
 function wordcount(box, v) {
