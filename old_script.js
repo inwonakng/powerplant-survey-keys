@@ -231,5 +231,5 @@ function showsurvey() {
 }
 
 function makelink(key) {
-    return `https://cdn.jsdelivr.net/gh/inwonakng/powerplant-survey-keys@latest/imgs/${key}.jpg`
+    return `https://cdn.jsdelivr.net/gh/inwonakng/powerplant-survey-keys@master/imgs/${key}.jpg`
 }
