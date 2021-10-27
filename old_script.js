@@ -220,7 +220,7 @@ function wordcount(box, v) {
     words = v.split(/\b\W+\b/)
     if (words.length == 1 && $.trim(words[0]).length == 0) {
         box.innerHTML = '<small>' + 0 + '</small>'
-    } else {
+    } else {https://inwonakng.github.io/powerplant-survey-keys/imgs/onecity.jpg
         box.innerHTML = '<small>' + words.length + '</small>'
     }
 }
@@ -231,5 +231,5 @@ function showsurvey() {
 }
 
 function makelink(key) {
-    return `https://cdn.jsdelivr.net/gh/inwonakng/powerplant-survey-keys@master/imgs/${key}.jpg`
+    return `https://inwonakng.github.io/powerplant-survey-keys/imgs/${key}.jpg`
 }
