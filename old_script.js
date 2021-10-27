@@ -5,7 +5,7 @@ var suggestion_on = true
 var num_questions = 4
 var qset = genRanNums(1000,1)
 var cur_index= -1
-var cities = ['C1', 'C2']
+var cities = ['c1', 'c2']
 
 $(document).ready(() => {
     //  setting user city randomly
@@ -26,11 +26,16 @@ $(document).ready(() => {
     $("#education").prop('selectedIndex', -1)
     $("#agegroup").prop('selectedIndex', -1)
 
-    
-    makequestion()
+    for(i = 0; i < num_questions; i++){
+        makequestion()
+    }
+    $('#questions').children().hide()
+    $('#questions').children().first().show()
+    $('scenario').html(`Scearnio 1`)
     $('qindex').html(`1/${num_questions+1}`)
 
     $('#prevbtn').prop('disabled',true)
+    cur_index=0
 
     //  use this functions to skip pages to debug
     //  accept()
@@ -41,40 +46,40 @@ $(document).ready(() => {
     //  next()
 })
 
-function set_text(num, num_cities) {
-    vari = plant_story[num]
-    usercity = $('#usercity').val().toLowerCase()
+// function set_text(num, num_cities) {
+//     vari = plant_story[num]
+//     usercity = $('#usercity').val().toLowerCase()
 
-    for (i = 0; i < num_questions; i++) {
-        if (num_cities == 2) {
-            ac = vari[i]['affected'][0].toLowerCase()
-            ikey = 'u_' + usercity + '_p_' + ac
-        } else {
-            ikey = 'onecity'
-        }
+//     for (i = 0; i < num_questions; i++) {
+//         if (num_cities == 2) {
+//             ac = vari[i]['affected'][0].toLowerCase()
+//             ikey = 'u_' + usercity + '_p_' + ac
+//         } else {
+//             ikey = 'onecity'
+//         }
 
-        document.getElementById('q' + i + 'diagram').src = makelink(ikey)
-        document.getElementById('q' + i + 'c1pop').innerHTML = vari[i]['C1']
-        if (num_cities == 2) {
-            document.getElementById('q' + i + 'c2pop').innerHTML = vari[i]['C2']
-        }
-    }
-    document.getElementById('optionset').value = num.toString()
-}
+//         document.getElementById('q' + i + 'diagram').src = makelink(ikey)
+//         document.getElementById('q' + i + 'c1pop').innerHTML = vari[i]['C1']
+//         if (num_cities == 2) {
+//             document.getElementById('q' + i + 'c2pop').innerHTML = vari[i]['C2']
+//         }
+//     }
+//     document.getElementById('optionset').value = num.toString()
+// }
 
 function makequestion(){
     var idx = $('#questions').children().length
 
     vari = plant_story[qset][idx]
-    if (genRanNums(2, 1)[0] + 1 == 2) {
+    // if (genRanNums(2, 1)[0] + 1 == 2) {
         ac = vari['affected'][0].toLowerCase()
         ikey = 'u_' + usercity + '_p_' + ac
-    } else {
-        ikey = 'onecity'
-    }
+    // } else {
+    //     ikey = 'onecity'
+    // }
 
     $('#questions').append(
-        $('<div>').append(
+        $('<div>',{class:'question'}).append(
             `<div>
                 <h4>Proposal</h4>
                 <div class="imgbox">
@@ -98,27 +103,27 @@ function makequestion(){
         )
     )
     $('#optionset').val(idx.toString())
-    $('scenario').html(`Scearnio ${idx+1}`)
 }
 
-$('#nextbtn').click(()=> {
-    var idx = $('#questions').children().length
+$('#nextbtn').click(e => {
+    var idx = $('#questions').children().index($('#questions .question:visible'))
+    console.log(idx)
     
-    if(idx == num_questions -1){
+    if(idx == num_questions -2){
         $('#nextbtn').prop('disabled',true)
     }
 
     if(idx < num_questions){
-        makequestion()
         $('#questions').children().hide()
-        $('#questions').children().last().show()
+        $('#questions').children().eq(idx+1).show()
         $('#prevbtn').prop('disabled',false)
     }
-
+    $('#scenario').html(`Scearnio ${idx+2}`)
 })
 
 $('#prevbtn').click(e=>{
-    var idx = $('#questions').children().length
+    var idx = $('#questions').children().index($('#questions .question:visible'))
+    console.log(idx)
     
     if(idx == 1){
         $('#prevbtn').prop('disabled',true)
@@ -126,8 +131,9 @@ $('#prevbtn').click(e=>{
 
     if(idx > 0){
         $('#questions').children().hide()
-        $('#questions').children().eq(idx).show()
+        $('#questions').children().eq(idx-1).show()
     }
+    $('#scenario').html(`Scearnio ${idx}`)
 })
 
 
@@ -222,5 +228,5 @@ function showsurvey() {
 }
 
 function makelink(key) {
-    return `https://cdn.jsdelivr.net/gh/inwonakng/powerplant-survey-keys@master/imgs/${key}.jpg`
+    return `https://cdn.jsdelivr.net/gh/inwonakng/powerplant-survey-keys@latest/imgs/${key}.jpg`
 }
