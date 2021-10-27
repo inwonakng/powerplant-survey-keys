@@ -111,6 +111,7 @@ $('#nextbtn').click(e => {
     
     if(idx == num_questions -2){
         $('#nextbtn').prop('disabled',true)
+        $('#prevbtn').prop('disabled',false)
     }
 
     if(idx < num_questions){
@@ -127,6 +128,7 @@ $('#prevbtn').click(e=>{
     
     if(idx == 1){
         $('#prevbtn').prop('disabled',true)
+        $('#nextbtn').prop('disabled',false)
     }
 
     if(idx > 0){
