@@ -1,3 +1,5 @@
+alert('we loaded!')
+
 var imgkeys = {
     'u_c1_p_c1':  '1EGtezErvlQJI_FfZsDpD4VKbDudYYcVq',
     'u_c1_p_c2':  '1tuU_Qnjo30J0dgiQQ2pqFrFs0jCTxiDp',
