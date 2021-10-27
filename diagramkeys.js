@@ -12,4 +12,3 @@ prompt_texts = {
 }
 
 var icon_list = '<li>The ðŸ‘¥ icon represents the population of the city. </li><li>The $$$ sign represents the income increase. </li><li>The ðŸ’“ icon represents the expected lifespan. </li>'
-@inwonakng
