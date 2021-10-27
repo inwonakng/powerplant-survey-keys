@@ -1,4 +1,3 @@
-window.onload = chooseOptions
 var options_set = false
 var suggestion_on = true
 var questions = [document.getElementById('q0'),
