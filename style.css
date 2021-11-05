@@ -1,3 +1,7 @@
+#consentform {
+    margin:20px;
+}
+
 body{
     display: flex;
     justify-content: center;
@@ -6,36 +10,9 @@ body{
     height: 100%;
 }
 
-.scenario {
-    margin:10px;
-}
-
-.diagrams{
-    display: flex;
-    flex-direction: row;
-    justify-content: center;
-    margin-top:30px;
-    aspect-ratio: 3/1;
-}
-
-.question{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-}
-
-/* canvas{
-    height:100%;
-} */
-
 crowd-form{
-    margin:10px;
-    padding:10px;
-}
-
-#consentform {
-    margin:20px;
+    width: 90%;
+    height: 100%;
 }
 
 table {
@@ -62,24 +39,72 @@ h4 {
     margin: 10px;
 }
 
-.imgbox {
+
+.scenario {
+    margin:10px;
+}
+
+.question{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+/* STUFF TO DO WITH DIAGRAMS */
+.diagrams{
+    display: flex;
+    flex-direction: row;  
+    flex-wrap: wrap;
+    justify-content: space-evenly;
+    margin-top:30px;
+}
+
+.container {
     position: relative;
-    width: 640px;
-    height: 360px;
 }
 
-.imgbox img {
-    height: 360px;
+canvas {
+    display:inline-block
 }
 
-.imgbox bigpop {
+
+.overlay{
+    width: 100%;
+    height: 100%;
+    display: inline-block;
     position: absolute;
-    top: 135px;
-    left: 130px;
+    justify-content: center;
+    display: flex;
+    align-items: center;
 }
 
-.imgbox smallpop {
-    position: absolute;
-    top: 190px;
-    left: 410px;
+.frame{
+    text-align: center;
+    font-weight: bold;
+}
+
+.overlay table{
+    top:30%;
+    align-self: center;
+    text-align: center;
+}
+
+.overlay td.icons{
+    width:20%;
+}
+
+.overlay table,td,tr{
+    border:none;
+}
+
+.table-cont{
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    height:100%;
+}
+
+.downarrow{
+    font-size: medium;
 }

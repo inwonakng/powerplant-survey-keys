@@ -26,7 +26,7 @@ const wordcount = (box, v) => {
     words = v.split(/\b\W+\b/)
     if (words.length == 1 && $.trim(words[0]).length == 0) {
         box.innerHTML = '<small>' + 0 + '</small>'
-    } else {https://inwonakng.github.io/powerplant-survey-keys/imgs/onecity.jpg
+    } else {
         box.innerHTML = '<small>' + words.length + '</small>'
     }
 }
@@ -45,7 +45,6 @@ const drawcircle = (canvas,args) => {
     var context = canvas.getContext('2d');
     var centerX = canvas.width / 2;
     var centerY = canvas.height / 2;
-    // var radius = canvas.width>canvas.height ? canvas.height/2-5 : canvas.width/2-5;
 
     let circle = new Path2D();  // <<< Declaration
     circle.arc(centerX, centerY, args.side/2-20, 0, 2 * Math.PI, false);
@@ -55,7 +54,45 @@ const drawcircle = (canvas,args) => {
     context.stroke(circle);  // <<< pass circle here too
 }
 
-const makequestion = (setup,idx,args) =>{
+const makediagram = (setup,idx,args) => 
+    $('<div>',{class:'diagrams'}).append(
+        setup[idx].cities.map(c=>
+            $('<div>',).append(
+                $('<a>',{html:c.name}),
+                $('<div>',{class:'container'}).append(
+                    $('<div>', {class:'overlay'}).append(
+                        $('<div>',{class:'table-cont'}).append(
+                            $('<table>').append(
+                                c.features.map(f=>
+                                    $('<tr>').append(
+                                        $('<td>',{html:f.icon,class:'icons'}),
+                                        $('<td>',{html:f.beforetext})
+                                )[0]),
+                                $('<tr>').append(
+                                    $('<td>',{html:emojis.downarrow,colspan:2,class:'downarrow'})
+                                ),
+                                c.features.map(f=>
+                                    $('<tr>').append(
+                                        $('<td>',{html:f.icon,class:'icons'}),
+                                        $('<td>',{html:tostr(f.after)})
+                                )[0]),
+                            )
+                        )
+                    ),
+                    $('<canvas>').attr({width:args.diagram.side,height:args.diagram.side}),
+                )
+            )[0]
+        )
+    )
+
+//=================================
+//    STUFF RELATED TO INPUTS    
+//=================================
+
+const makeinputs = (setup,idx,args) => 
+    $('<div>',{class:'input-cont'})
+
+const makequestion = (setup,idx,args) => {
     canvases = [$('<canvas>'),$('<canvas>'),$('<canvas>')]
 
     question = $('<div>',{class:'question'}).append(
@@ -66,26 +103,13 @@ const makequestion = (setup,idx,args) =>{
                         $('<p>')
                     ),
                     $('<div>').append(
-                        $('<h4>',{class:'question'}),
-                        $('<div>',{class:'diagrams'}).append(
-                            $('<canvas>').attr({width:args.diagram.side,height:args.diagram.side}),
-                            $('<canvas>').attr({width:args.diagram.side,height:args.diagram.side}),
-                            $('<canvas>').attr({width:args.diagram.side,height:args.diagram.side})
-                            // $('<img>',{src:makelink(ikey)}),
-                            // $('<b>').append(
-                            //     $('<bigpop>',{id:'c1pop',html:vari['C1']})
-                            // ),
-                            // $('<b>').append(
-                            //     $('<smallpop>',{id:'c2pop',html:vari['C2']})
-                            // )
-                        )
+                        makediagram(setup,idx,args)
                     )
                 )
 
     canvases = question.find('canvas').toArray()
     drawcircle(canvases[0],{...args.diagram,color:'cyan',})
     drawcircle(canvases[1],{...args.diagram,color:'pink',})
-    
     
     $('#questions').append(question)
 }
@@ -98,7 +122,6 @@ const makequestion = (setup,idx,args) =>{
 
 $('#nextbtn').click(e => {
     var idx = $('#questions').children().index($('#questions .question:visible'))
-    $('#promptbody').html(prompt(setup[idx].user_city))
     console.log(idx)
     
     if(idx == settings.num_questions -2){
@@ -116,7 +139,6 @@ $('#nextbtn').click(e => {
 
 $('#prevbtn').click(e=>{
     var idx = $('#questions').children().index($('#questions .question:visible'))
-    $('#promptbody').html(prompt(setup[idx].user_city))
     console.log(idx)
     
     if(idx == 1){
@@ -141,18 +163,32 @@ $('#rejectbtn').click(()=>{
     window.history.back()
 })
 
+
+//=================================
+//            DRIVER    
+//=================================
+
 $(document).ready(() => {
     var diagram_side = ($(window).width()*.8)/3
-
     var setup = []
-    for(i = 0; i < settings.num_questions; i++){
-        setup.push({user_city:`C${genRanNums(2,1)[0]+1}`})
+    for(let t of settings.qtypes){
+        uc = genRanNums(2,1)[0]
+        setup.push({
+                    user_city:`C${uc+1}`,
+                    uc:uc,
+                    cities: settings.cities.map((c,i)=>({
+                        name:c.name,
+                        text: t.text,
+                        pop: c.low + genRanNums((c.high-c.low)/c.step,1)[0]*c.step,
+                        features: settings.features.map(f=>
+                            ({  ...f,
+                                after:genRanNums(f[t[i]])[0]
+                        }))
+                    }))
+                    })
     }
-    //  setting user city randomly
-    // $('#region').html(usercity)
-    // $('#usercity').val(usercity)
 
-    $('#icon_list').html(icon_list)
+    $('#setup').val(JSON.stringify(setup))
 
     num_cities = genRanNums(2, 1)[0] + 1
 
@@ -174,7 +210,7 @@ $(document).ready(() => {
 
     $('#prevbtn').prop('disabled',true)
 
-    $('#setup').val(JSON.stringify(setup))
+    
 
     // $('#promptbody').html(prompt(usercity))
 
